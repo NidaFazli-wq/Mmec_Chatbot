@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMEC College AI Chatbot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+    <style>
+        :root {
+            --primary: #6c63ff;
+            --secondary: #00c9a7;
+            --accent: #1e293b;
+            --bubble-dark: #232946;
+            --bubble-light: #3e4c7a;
+            --button: #6c63ff;
+            --button-hover: #00c9a7;
+            --border: #6c63ff;
+        }
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #232946 0%, #6c63ff 60%, #00c9a7 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Blurred SVG/Shape Overlay */
+        .bg-abstract {
+            position: fixed;
+            z-index: 0;
+            inset: 0;
+            pointer-events: none;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #232946 0%, #6c63ff 60%, #00c9a7 100%);
+            opacity: 0.7;
+        }
+        .bg-abstract svg {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        body.dark {
+            background: linear-gradient(120deg, #1e293b 0%, #334155 40%, #312e81 100%);
+        }
+
+        .container {
+            max-width: 400px;
+            width: 90%;
+            padding: 2rem 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        body.dark .container {
+            background: rgba(31, 41, 55, 0.95);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #0f766e; /* Teal */
+        }
+
+        body.dark h1 {
+            color: #14b8a6; /* Light teal for dark mode */
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Page Transitions */
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Forms */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input[type="email"], input[type="password"], input[type="text"] {
+            padding: 0.75rem;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        body.dark input {
+            background: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+
+        body.dark input:focus {
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+        }
+
+        /* Buttons */
+        button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(15, 118, 110, 0.3);
+        }
+
+        body.dark button {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+        }
+
+        /* Toggle Button */
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .mode-toggle {
+            background: rgba(44, 62, 80, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        body.dark .mode-toggle {
+            background: rgba(31, 41, 55, 0.9);
+            color: #f9fafb;
+        }
+
+        /* Welcome Page */
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #0f766e, #1e40af);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+
+        /* Welcome Page Fullscreen */
+        #welcomePage {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(135deg, #232946 0%, #6c63ff 60%, #00c9a7 100%);
+        }
+        #welcomePage.page {
+            opacity: 0;
+            pointer-events: none;
+            visibility: hidden;
+        }
+        #welcomePage.active {
+            opacity: 1;
+            pointer-events: auto;
+            visibility: visible;
+            transition: opacity 0.7s cubic-bezier(.4,0,.2,1), visibility 0.7s cubic-bezier(.4,0,.2,1);
+        }
+        /* Welcome page background image (offline) */
+        .welcome-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: url('frontpage.jpg') center center/cover no-repeat;
+            z-index: 1;
+            filter: brightness(0.5) blur(2px);
+        }
+        /* Dark mode background image (offline) */
+        body.dark .bg-abstract {
+            background: url('dark-bg.jpg') center center/cover no-repeat;
+            opacity: 0.95;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 3;
+            color: #fff;
+            text-align: center;
+            width: 100vw;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(44,62,80,0.3);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        }
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 1px 2px #000;
+        }
+        .welcome-logo {
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(108,99,255,0.18);
+        }
+        .welcome-logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+        .welcome-btn {
+            margin-top: 2.5rem;
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 6px 24px rgba(108,99,255,0.18);
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .welcome-btn:hover {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            transform: scale(1.05);
+        }
+        /* Login Page */
+        #loginPage .container {
+            background: rgba(44,62,80, 0.98);
+            border-radius: 24px;
+            box-shadow: 0 8px 40px 0 rgba(108,99,255, 0.18), 0 1.5px 8px 0 rgba(0,201,167, 0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 420px;
+            width: 95%;
+            margin: 0 auto;
+            border: 1.5px solid var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        #loginPage h1, #loginPage p, #loginPage label, #loginPage input, #loginPage button {
+            color: #fff !important;
+        }
+        #loginPage input[type="email"], #loginPage input[type="password"] {
+            background: #232946;
+            border: 1.5px solid var(--primary);
+            color: #fff;
+            font-size: 1.08rem;
+            border-radius: 12px;
+            padding: 0.85rem 1.1rem;
+            margin-bottom: 0.7rem;
+        }
+        #loginPage input:focus {
+            border: 2px solid var(--secondary);
+            background: #232946;
+            color: #fff;
+        }
+        #loginPage button[type="submit"] {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 16px;
+            padding: 0.9rem 0;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 16px rgba(108,99,255,0.13);
+            letter-spacing: 1px;
+            border: none;
+        }
+        #loginPage button[type="submit"]:hover {
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+        #loginPage .login-icon {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 1.2rem;
+            text-shadow: 0 2px 12px rgba(56,189,248,0.12);
+        }
+        /* Chat Interface */
+        #chat-page {
+            background: rgba(44,62,80,0.98);
+            border-radius: 24px;
+            box-shadow: 0 8px 40px 0 rgba(108,99,255, 0.18), 0 1.5px 8px 0 rgba(0,201,167, 0.08);
+            border: 1.5px solid var(--primary);
+            padding: 0;
+            max-width: 700px;
+            width: 98%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            height: 82vh;
+            overflow: hidden;
+        }
+        body.dark #chatPage {
+            background: linear-gradient(135deg, #101828 0%, #172554 100%);
+        }
+
+        .chat-header {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #fff;
+            padding: 1.1rem 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border-bottom: 1.5px solid var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: #fff !important;
+            background: none !important;
+            text-shadow: 0 2px 12px rgba(108,99,255,0.18), 0 1px 2px #00c9a7;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        body.dark .chat-header h2 {
+            color: #fff !important;
+            background: none !important;
+            -webkit-background-clip: unset !important;
+            -webkit-text-fill-color: unset !important;
+            background-clip: unset !important;
+           .my-text {
+    color: unset !important; /* standard fallback */
+    -webkit-text-fill-color: unset !important; /* works in Chrome/Safari */
+}
+
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: #fff;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 0.5rem 1.2rem;
+            border: none;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 2px 8px rgba(239,68,68,0.08);
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1.2rem;
+            background: transparent;
+            color: #fff;
+        }
+
+        .message {
+            margin-bottom: 1.1rem;
+            padding: 1.1rem 1.2rem;
+            border-radius: 18px;
+            max-width: 85%;
+            font-size: 1.08rem;
+            box-shadow: 0 2px 8px rgba(108,99,255,0.04);
+            animation: fadeIn 0.3s ease;
+            word-break: break-word;
+            color: #fff;
+        }
+
+        .user-message {
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+            color: #fff;
+            margin-left: auto;
+            text-align: right;
+            border-bottom-right-radius: 6px;
+            border-top-right-radius: 24px;
+            border-top-left-radius: 24px;
+            border-bottom-left-radius: 24px;
+            box-shadow: 0 2px 8px rgba(0,201,167,0.08);
+        }
+
+        .bot-message {
+            background: var(--bubble-dark);
+            color: #fff;
+            margin-right: auto;
+            border-bottom-left-radius: 6px;
+            border-top-right-radius: 24px;
+            border-top-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 2px 8px rgba(108,99,255,0.08);
+        }
+
+        .chat-timestamp {
+            color: #b3b3b3 !important;
+        }
+
+        .chat-input {
+            padding: 1.1rem 1.2rem;
+            background: #232946;
+            border-top: 1.5px solid var(--primary);
+            display: flex;
+            gap: 0.7rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.85rem 1.1rem;
+            border: 1.5px solid var(--primary);
+            border-radius: 18px;
+            background: #232946;
+            color: #fff;
+            font-size: 1.08rem;
+        }
+
+        .chat-input input:focus {
+            border: 2px solid var(--secondary);
+            background: #232946;
+            color: #fff;
+        }
+
+        .chat-input button {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 16px;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            letter-spacing: 1px;
+        }
+
+        .chat-input button:hover {
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+            transform: translateY(-2px) scale(1.03);
+        }
+
+        /* Suggestions Bar */
+        .chat-suggestions {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 0.7rem;
+            padding: 0.7rem 1.2rem 0.7rem 1.2rem;
+            background: rgba(44,62,80,0.98);
+            border-top: 1px solid var(--primary);
+            justify-content: flex-start;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) #232946;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .chat-suggestions::-webkit-scrollbar {
+            height: 6px;
+        }
+        .chat-suggestions::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        .suggestion-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: #232946;
+            color: #fff;
+            border: 1.5px solid var(--primary);
+            border-radius: 22px;
+            padding: 0.5rem 1.3rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(108,99,255,0.07);
+            transition: background 0.2s, color 0.2s, border 0.2s, transform 0.15s;
+            white-space: nowrap;
+            min-width: 140px;
+            max-width: 180px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .suggestion-btn:active, .suggestion-btn.selected {
+            background: var(--primary);
+            color: #fff;
+            border: 1.5px solid var(--secondary);
+        }
+        .suggestion-btn:hover {
+            background: var(--secondary);
+            color: #fff;
+            border: 1.5px solid var(--primary);
+            transform: scale(1.07);
+        }
+        @media (max-width: 600px) {
+            .welcome-title { font-size: 1.5rem; }
+            .welcome-btn { font-size: 1rem; padding: 0.7rem 1.5rem; }
+            #chat-page { padding: 0; max-width: 99vw; height: 90vh; }
+            .chat-header { padding: 0.7rem 0.7rem; font-size: 1rem; }
+            .chat-messages { padding: 0.7rem 0.5rem; }
+            .chat-input { padding: 0.7rem 0.5rem; flex-direction: column; gap: 0.5rem; }
+            .message { font-size: 0.98rem; padding: 0.7rem 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-abstract"></div>
+    <!-- Mode Toggle -->
+    <div class="toggle-container">
+        <button class="mode-toggle" id="modeToggle">🌙</button>
+    </div>
+    <!-- Welcome Page -->
+    <div id="welcomePage" class="page active">
+        <div class="welcome-bg"></div>
+        <div class="welcome-overlay"></div>
+        <div class="welcome-content">
+            <div class="welcome-logo"><img src="logo.png" alt="MMEC Logo"></div>
+            <div class="welcome-title">
+                Welcome to <br> Maratha Mandal Engineering College
+            </div>
+            <button id="goToLogin" class="welcome-btn">Login</button>
+        </div>
+    </div>
+    <!-- Login Page -->
+    <div id="loginPage" class="page">
+        <div class="container">
+            <div class="login-icon"><img src="bot-avatar.png" alt="Bot" style="width:2.5rem;height:2.5rem;"></div>
+            <h1>MMEC Chatbot Login</h1>
+            <p>Welcome to Maratha Mandal Engineering College AI Assistant.</p>
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email" required autocomplete="username">
+                <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+                <button type="submit">Login</button>
+                <p id="firstTimeNote" style="display: none; font-size: 0.9rem;">First time? This will set your password.</p>
+            </form>
+        </div>
+    </div>
+    <!-- Chat Page -->
+    <div id="chatPage" class="page">
+        <div id="chat-page">
+            <div class="chat-header">
+                <h2>
+                    <img src="bot-avatar.png" alt="Bot" style="width:2rem;height:2rem;vertical-align:middle;margin-right:0.5rem;">
+                    MMEC <span style="font-weight:800;">AI Assistant</span>
+                </h2>
+                <button class="logout-btn" id="logoutBtn">Logout</button>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <div class="message bot-message">
+                    👋 Hello! I'm the MMEC AI Chatbot. Ask me about the college, courses, admissions, fees, or anything related. 😊
+                </div>
+            </div>
+            <!-- Suggestions Bar -->
+            <div class="chat-suggestions" id="chatSuggestions">
+                <button class="suggestion-btn" data-question="Tell me about the admission process">📄 Admission Process</button>
+                <button class="suggestion-btn" data-question="Tell me about the courses offered">📚 Courses Offered</button>
+                <button class="suggestion-btn" data-question="What is the fee structure?">💸 Fee Structure</button>
+                <button class="suggestion-btn" data-question="What are the placement opportunities?">🎓 Placements</button>
+                <button class="suggestion-btn" data-question="Contact details">📞 Contact Info</button>
+                <button class="suggestion-btn" data-question="What are the campus facilities?">🏫 Campus Facilities</button>
+                <button class="suggestion-btn" data-question="Tell me about scholarships">🎓 Scholarships</button>
+                <button class="suggestion-btn" data-question="What is student life like?">👨‍🎓 Student Life</button>
+                <button class="suggestion-btn" data-question="Show me the college website">🌐 College Website</button>
+                <button class="suggestion-btn" data-question="Who manages MMEC?">🏛️ Management</button>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="userInput" placeholder="Type your question here..." required autocomplete="off">
+                <button id="sendBtn">Send</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    // --- FAQ DATA ---
+    const COLLEGE_INFO = `
+<b>Maratha Mandal Engineering College (MMEC)</b><br>
+📍 R.S. No. 104, Halbhavi Village, New Vantmuri Post, Via-Kakati, Belagavi – 591113, Karnataka, India<br>
+🗓️ Established: 1997<br>
+✅ Approved by: AICTE<br>
+🎓 Affiliated to: Visvesvaraya Technological University (VTU), Belagavi<br>
+🏛️ Managed by: Maratha Mandal, Belagavi (founded in 1931)<br>
+🌐 Website: <a href="https://www.mmec.edu.in" target="_blank">www.mmec.edu.in</a><br>
+📞 9353364643 ✉ <a href="mailto:info@mmec.edu.in">info@mmec.edu.in</a><br>
+<b>Highlights:</b> Academic excellence, discipline, strong placement support, and ethical values.
+`;
+
+    const FAQS = [
+        {
+            question: "about college",
+            keywords: ["about", "college", "mmec", "information", "details", "institute", "your college"],
+            answer: COLLEGE_INFO
+        },
+        {
+            question: "courses offered",
+            keywords: ["courses", "branches", "streams", "departments", "programs", "offer", "offered"],
+            answer: `
+<b>Courses/Branches offered at MMEC:</b><br>
+🖥️ Computer Science & Engineering (CSE)<br>
+🤖 Robotics & Artificial Intelligence (R&AI)<br>
+⚙️ Mechanical Engineering<br>
+📡 Electronics & Communication Engineering (ECE)
+`
+        },
+        {
+            question: "admissions",
+            keywords: ["admission", "admissions", "apply", "process", "entrance", "eligibility", "enroll"],
+            answer: `
+<b>Admissions at MMEC:</b><br>
+Admissions are open for all branches. For eligibility, process, and important dates, visit <a href="https://www.mmec.edu.in/admissions" target="_blank">mmec.edu.in/admissions</a> or contact 📞 9353364643.
+`
+        },
+        {
+            question: "fee structure",
+            keywords: ["fee", "fees", "payment", "cost", "tuition", "structure", "charges", "amount"],
+            answer: `
+<b>Fee Structure:</b><br>
+For detailed fee structure, please visit <a href="https://www.mmec.edu.in/fees" target="_blank">mmec.edu.in/fees</a> or contact the college office.<br>
+Scholarships and financial aid are available for eligible students.
+`
+        },
+        {
+            question: "address contact",
+            keywords: ["address", "contact", "location", "phone", "email", "reach", "where"],
+            answer: `
+<b>Contact & Address:</b><br>
+R.S. No. 104, Halbhavi Village, New Vantmuri Post, Via-Kakati, Belagavi – 591113, Karnataka, India<br>
+📞 9353364643 ✉ <a href="mailto:info@mmec.edu.in">info@mmec.edu.in</a>
+`
+        },
+        {
+            question: "placement support",
+            keywords: ["placement", "placements", "job", "support", "career", "campus", "recruitment"],
+            answer: `
+<b>Placement Support:</b><br>
+MMEC offers strong placement support with top recruiters visiting the campus every year. For details, visit <a href="https://www.mmec.edu.in/placements" target="_blank">mmec.edu.in/placements</a>.
+`
+        },
+        {
+            question: "website",
+            keywords: ["website", "site", "webpage", "online", "link"],
+            answer: `🌐 Visit our website: <a href="https://www.mmec.edu.in" target="_blank">www.mmec.edu.in</a>`
+        },
+        {
+            question: "greeting",
+            keywords: ["hi", "hello", "hey", "good morning", "good afternoon", "good evening"],
+            answer: "Hello! 👋 How can I help you with MMEC information today?"
+        },
+        {
+            question: "thanks",
+            keywords: ["thank", "thanks", "thank you", "bye", "goodbye", "see you"],
+            answer: "You're welcome! 😊 If you have more questions about MMEC, just ask."
+        }
+    ];
+
+    // --- FUZZY SEARCH SETUP ---
+    const fuse = new Fuse(FAQS, {
+        keys: ['keywords'],
+        threshold: 0.4,
+        includeScore: true
+    });
+
+    // --- PAGE MANAGEMENT ---
+    const pages = {
+        login: document.getElementById('loginPage'),
+        welcome: document.getElementById('welcomePage'),
+        chat: document.getElementById('chatPage')
+    };
+
+    function showPage(pageName) {
+        Object.values(pages).forEach(page => page.classList.remove('active'));
+        pages[pageName].classList.add('active');
+    }
+
+    // Welcome to Login
+    document.getElementById('goToLogin').addEventListener('click', () => {
+        showPage('login');
+    });
+
+    // Login Logic (localStorage for password)
+    const loginForm = document.getElementById('loginForm');
+    const firstTimeNote = document.getElementById('firstTimeNote');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value.trim();
+        if (!email || !password) return;
+
+        let users = JSON.parse(localStorage.getItem('mmec_users') || '{}');
+        if (users[email]) {
+            if (users[email] !== password) {
+                alert('Incorrect password for this email!');
+                return;
+            }
+        } else {
+            // First time: Create password for this email
+            users[email] = password;
+            localStorage.setItem('mmec_users', JSON.stringify(users));
+            firstTimeNote.style.display = 'block';
+            alert('Password set! You can now log in.');
+        }
+
+        localStorage.setItem('current_user', email);
+        showPage('chat');
+    });
+
+    // --- CHAT LOGIC ---
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function formatTimeDate() {
+        const now = new Date();
+        const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const date = now.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+        return `<span class="chat-timestamp" style="display:block;font-size:0.85em;color:#94a3b8;margin-top:0.3em;">${date} • ${time}</span>`;
+    }
+
+    function addMessage(content, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        messageDiv.innerHTML = (isUser ? '🧑‍🎓 ' : '🤖 ') + content.replace(/\n/g, '<br>') + formatTimeDate();
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        userInput.value = '';
+
+        // Fuzzy match FAQ
+        const result = fuse.search(message);
+        if (result.length && result[0].score < 0.4) {
+            addMessage(result[0].item.answer);
+            return;
+        }
+
+        // If not found, fallback to Gemini API
+        addMessage('<span style="color:#888;">Let me check with our AI assistant...</span>');
+        try {
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            // If Gemini returns irrelevant, guide user
+            if (data.response && data.response.trim().length > 0) {
+                addMessage(data.response);
+            } else {
+                addMessage("Sorry, I can only answer questions related to MMEC college, courses, admissions, fees, placements, and contact info. Please ask about these topics.");
+            }
+        } catch (error) {
+            addMessage('Sorry, there was an error. Please try again. 😔');
+        }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('current_user');
+        showPage('login');
+        chatMessages.innerHTML = '<div class="message bot-message">👋 Hello! I\'m the MMEC AI Chatbot. Ask me about the college, courses, admissions, fees, or anything related. 😊</div>';
+    });
+
+    // Light/Dark Mode Toggle
+    const modeToggle = document.getElementById('modeToggle');
+    const body = document.body;
+
+    function initMode() {
+        const savedMode = localStorage.getItem('darkMode');
+        if (savedMode === 'true') {
+            body.classList.add('dark');
+            modeToggle.textContent = '🌙';
+        }
+    }
+
+    modeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark');
+        const isDark = body.classList.contains('dark');
+        modeToggle.textContent = isDark ? '🌙' : '🌞';
+        localStorage.setItem('darkMode', isDark);
+    });
+
+    // Initialize
+    initMode();
+    if (localStorage.getItem('current_user')) {
+        showPage('chat');
+    } else {
+        showPage('welcome');
+    }
+
+    // --- SUGGESTIONS LOGIC ---
+    const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+
+    suggestionBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const question = btn.getAttribute('data-question');
+            addMessage(question, true);
+
+            // Fuzzy match FAQ
+            const result = fuse.search(question);
+            if (result.length && result[0].score < 0.4) {
+                addMessage(result[0].item.answer);
+                return;
+            }
+
+            // If not found, fallback to Gemini API
+            addMessage('<span style="color:#888;">Let me check with our AI assistant...</span>');
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.response && data.response.trim().length > 0) {
+                    addMessage(data.response);
+                } else {
+                    addMessage("Sorry, I can only answer questions related to MMEC college, courses, admissions, fees, placements, and contact info. Please ask about these topics.");
+                }
+            })
+            .catch(error => {
+                addMessage('Sorry, there was an error. Please try again. 😔');
+            });
+        });
+    });
+
+    // Suggestion Buttons Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                userInput.value = this.dataset.question;
+                sendBtn.click();
+                // Optional: visually highlight the selected button
+                document.querySelectorAll('.suggestion-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                setTimeout(() => this.classList.remove('selected'), 600);
+            });
+        });
+    });
+    </script>
+</body>
+</html>
