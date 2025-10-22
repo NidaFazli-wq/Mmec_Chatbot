@@ -1,0 +1,107 @@
+[
+  {
+    "ts": "2025-10-21T15:29:15.140749Z",
+    "user": "Student",
+    "user_msg": "admission",
+    "bot_msg": "Admissions are as per VTU guidelines. Apply via college admissions portal or contact the admissions office at the college. Keep academic transcripts, ID proofs, and entrance test details ready.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T15:52:02.266233Z",
+    "user": "Student",
+    "user_msg": "admission",
+    "bot_msg": "Admissions are as per VTU guidelines. Apply via college admissions portal or contact the admissions office at the college. Keep academic transcripts, ID proofs, and entrance test details ready.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T15:52:06.496617Z",
+    "user": "Student",
+    "user_msg": "placements",
+    "bot_msg": "The college offers placement support through dedicated placement cell \u2014 organizing training, internships and campus recruitments. Contact placement cell for latest updates.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T15:58:41.850310Z",
+    "user": "Student",
+    "user_msg": "admission",
+    "bot_msg": "Admissions are as per VTU guidelines. Apply via college admissions portal or contact the admissions office at the college. Keep academic transcripts, ID proofs, and entrance test details ready.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:01:21.412523Z",
+    "user": "Student",
+    "user_msg": "admission process",
+    "bot_msg": "Admissions are as per VTU guidelines. Apply via college admissions portal or contact the admissions office at the college. Keep academic transcripts, ID proofs, and entrance test details ready.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:01:29.149378Z",
+    "user": "Student",
+    "user_msg": "courses offered",
+    "bot_msg": "MMEC offers these major streams: \n    - Computer Science & Engineering (CSE)\n    - Robotics & Artificial Intelligence (R&AI)\n    - Mechanical Engineering\n    - Electronics & Communication Engineering (ECE)",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:02:10.559230Z",
+    "user": "Student",
+    "user_msg": "placements",
+    "bot_msg": "The college offers placement support through dedicated placement cell \u2014 organizing training, internships and campus recruitments. Contact placement cell for latest updates.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:03:26.620893Z",
+    "user": "Student",
+    "user_msg": "courses offered",
+    "bot_msg": "MMEC offers these major streams: \n    - Computer Science & Engineering (CSE)\n    - Robotics & Artificial Intelligence (R&AI)\n    - Mechanical Engineering\n    - Electronics & Communication Engineering (ECE)",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:11:49.495156Z",
+    "user": "Student",
+    "user_msg": "courses offered",
+    "bot_msg": "MMEC offers these major streams: \n    - Computer Science & Engineering (CSE)\n    - Robotics & Artificial Intelligence (R&AI)\n    - Mechanical Engineering\n    - Electronics & Communication Engineering (ECE)",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:11:51.552035Z",
+    "user": "Student",
+    "user_msg": "placements",
+    "bot_msg": "The college offers placement support through dedicated placement cell \u2014 organizing training, internships and campus recruitments. Contact placement cell for latest updates.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:13:12.053574Z",
+    "user": "Student",
+    "user_msg": "admission process",
+    "bot_msg": "Admissions are as per VTU guidelines. Apply via college admissions portal or contact the admissions office at the college. Keep academic transcripts, ID proofs, and entrance test details ready.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:14:47.108250Z",
+    "user": "Admin",
+    "user_msg": "fee structure",
+    "bot_msg": "Fee structures vary by program and year. For general queries, contact +91 9353364643 or email info@mmec.edu.in. For exact fee breakup, request 'fee structure' giving your stream and year.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:14:48.947459Z",
+    "user": "Admin",
+    "user_msg": "placements",
+    "bot_msg": "The college offers placement support through dedicated placement cell \u2014 organizing training, internships and campus recruitments. Contact placement cell for latest updates.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-21T16:18:55.934224Z",
+    "user": "Student",
+    "user_msg": "placements",
+    "bot_msg": "The college offers placement support through dedicated placement cell \u2014 organizing training, internships and campus recruitments. Contact placement cell for latest updates.",
+    "offline": true
+  },
+  {
+    "ts": "2025-10-22T13:02:54.465085Z",
+    "user": "Student",
+    "user_msg": "admission process",
+    "bot_msg": "Admissions are as per VTU guidelines. Apply via college admissions portal or contact the admissions office at the college. Keep academic transcripts, ID proofs, and entrance test details ready.",
+    "offline": true
+  }
+]
